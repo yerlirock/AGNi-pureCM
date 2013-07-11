@@ -27,6 +27,7 @@ void __generic_unplug_device(struct request_queue *);
  * Internal atomic flags for request handling
  */
 enum rq_atomic_flags {
+	REQ_ATOM_COMPLETE = 0,
 	REQ_ATOM_URGENT = 1,
 };
 

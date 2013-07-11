@@ -173,21 +173,17 @@ bool cpufreq_compare(bool is_bigger, int reg, int level)
 static int omap_cpufreq_policy_notifier_call(struct notifier_block *this,
 				unsigned long code, void *data)
 {
-	/* Ketut P. Kumajaya: follow scaling_max_freq rule */
-  	/* struct cpufreq_policy *policy = data; */
+	struct cpufreq_policy *policy = data;
 
 	switch (code) {
 	case CPUFREQ_ADJUST:
-		/*if ((!strnicmp(policy->governor->name,
+		if ((!strnicmp(policy->governor->name,
 					"powersave", CPUFREQ_NAME_LEN))
 				|| (!strnicmp(policy->governor->name,
 					"performance", CPUFREQ_NAME_LEN))
 				|| (!strnicmp(policy->governor->name,
-{
 					"userspace", CPUFREQ_NAME_LEN)))
-				|| (!strnicmp(policy->governor->name,
-					"interactive", CPUFREQ_NAME_LEN))) {					
-
+{
 			pr_debug("cpufreq governor is changed to %s\n",
 					policy->governor->name);
 
@@ -196,16 +192,13 @@ static int omap_cpufreq_policy_notifier_call(struct notifier_block *this,
 		} else {
 			cpufreq_lock_type[MAX_LIMIT].disable_lock = false;
 			cpufreq_lock_type[MIN_LIMIT].disable_lock = false;
-		} */
-
+		}
 	case CPUFREQ_INCOMPATIBLE:
 	case CPUFREQ_NOTIFY:
 	default:
 		break;
 	}
 
-		cpufreq_lock_type[MIN_LIMIT].disable_lock = true;
-    		cpufreq_lock_type[MAX_LIMIT].disable_lock = true;
 	return NOTIFY_DONE;
 }
 

@@ -4,7 +4,7 @@ CROSS_COMPILE=/Working_Directory/android_prebuilt/linux-x86/toolchain/arm-eabi-4
 
 if [ ! -f $KERNELDIR/.config ];
 then
-  make defconfig psn_p311x_v2.0_oc_defconfig
+  make defconfig psn_p311x_v2.1_oc_defconfig
 fi
 
 . $KERNELDIR/.config

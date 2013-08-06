@@ -137,7 +137,11 @@ struct ehci_hcd {			/* one per controller */
 	unsigned		fs_i_thresh:1;	/* Intel iso scheduling */
 	unsigned		use_dummy_qh:1;	/* AMD Frame List table quirk*/
 	unsigned		has_synopsys_hc_bug:1; /* Synopsys HC */
-	unsigned		frame_index_bug:1; /* MosChip (AKA NetMos) */
+	unsigned		no_companion_port_handoff:1; /* Omap */
+
+	/* Transceiver QUIRKS */
+	unsigned		has_smsc_ulpi_bug:1; /* Smsc */
+	unsigned		resume_error_flag:1; /* Smsc */
 
 	/* required for usb32 quirk */
 	#define OHCI_CTRL_HCFS          (3 << 6)
@@ -161,9 +165,9 @@ struct ehci_hcd {			/* one per controller */
 #endif
 
 	/* debug files */
-#ifdef DEBUG
+/* #ifdef DEBUG */
 	struct dentry		*debug_dir;
-#endif
+/* #endif */
 	/*
 	 * OTG controllers and transceivers need software interaction
 	 */
@@ -755,9 +759,11 @@ static inline unsigned ehci_read_frame_index(struct ehci_hcd *ehci)
 
 /*-------------------------------------------------------------------------*/
 
+#if 0
 #ifndef DEBUG
 #define STUB_DEBUG_FILES
 #endif	/* DEBUG */
+#endif
 
 /*-------------------------------------------------------------------------*/
 

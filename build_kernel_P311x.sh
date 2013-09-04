@@ -1,7 +1,7 @@
 #!/bin/sh
 export KERNELDIR=`readlink -f .`
 . ~/AGNi_stamp_CM.sh
-. ~/gcc_4.4.3.sh
+. ~/gcc_4.7.2_armv7l.sh
 
 mv .git .git-halt
 
@@ -9,7 +9,7 @@ export ARCH=arm
 
 if [ ! -f $KERNELDIR/.config ];
 then
-  make defconfig psn_p311x_v2.3_oc_defconfig
+  make defconfig psn_p311x_v2.3.1_oc_defconfig
 fi
 
 . $KERNELDIR/.config
@@ -17,7 +17,7 @@ fi
 echo "BEGINING KERNEL COMPILATION .........."
 
 cd $KERNELDIR/
-make -j3 || exit 1
+make -j2 || exit 1
 
 mkdir -p $KERNELDIR/BUILT-P311x/lib/modules
 rm $KERNELDIR/BUILT-P311x/lib/modules/*

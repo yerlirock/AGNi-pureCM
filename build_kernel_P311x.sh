@@ -9,7 +9,7 @@ export ARCH=arm
 
 if [ ! -f $KERNELDIR/.config ];
 then
-  make defconfig psn_p311x_v2.3.1_oc_defconfig
+  make defconfig psn_p311x_v2.3.2_oc_defconfig
 fi
 
 . $KERNELDIR/.config
@@ -21,7 +21,7 @@ make -j2 || exit 1
 
 mkdir -p $KERNELDIR/BUILT-P311x/lib/modules
 rm $KERNELDIR/BUILT-P311x/lib/modules/*
-rm $KERNELDIR/BUILT-P311x/
+rm $KERNELDIR/BUILT-P311x/zImage
 
 echo "BEGINING SGX540 PVR KM COMPILATION ..........."
 cd $KERNELDIR/pvr_source/eurasiacon/build/linux2/omap4430_android

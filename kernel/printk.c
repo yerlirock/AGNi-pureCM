@@ -41,10 +41,8 @@
 #include <linux/cpu.h>
 #include <linux/notifier.h>
 #include <linux/rculist.h>
-#include "printk_interface.h"
 
 #include <asm/uaccess.h>
-#include <mach/sec_debug.h>
 
 /*
  * Architectures can override it:
@@ -217,6 +215,7 @@ void __init setup_log_buf(int early)
 			new_log_buf_len);
 		return;
 	}
+
 	spin_lock_irqsave(&logbuf_lock, flags);
 	log_buf_len = new_log_buf_len;
 	log_buf = new_log_buf;
@@ -844,12 +843,6 @@ asmlinkage int printk(const char *fmt, ...)
 	va_list args;
 	int r;
 
-// if printk mode is disabled, terminate instantly
-  	if (printk_mode == 0)
-  	{
-    		return 0;
-  	}
-
 #ifdef CONFIG_KGDB_KDB
 	if (unlikely(kdb_trap_printk)) {
 		va_start(args, fmt);
@@ -944,12 +937,6 @@ asmlinkage int vprintk(const char *fmt, va_list args)
 	char *p;
 	size_t plen;
 	char special;
-
-// if printk mode is disabled, terminate instantly
-        if (printk_mode == 0)
-        {
-                return 0;
-        }
 
 	boot_delay_msec();
 	printk_delay();
@@ -1886,12 +1873,4 @@ void kmsg_dump(enum kmsg_dump_reason reason)
 		dumper->dump(dumper, reason, s1, l1, s2, l2);
 	rcu_read_unlock();
 }
-#endif
-
-#ifdef CONFIG_MACH_PX
-void logbuf_force_unlock(void)
-{
-	logbuf_lock = __SPIN_LOCK_UNLOCKED(logbuf_lock);
-}
-EXPORT_SYMBOL(logbuf_force_unlock);
 #endif

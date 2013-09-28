@@ -511,8 +511,11 @@ static void release_all_fingers(struct mms_ts_info *info)
 	}
 	input_sync(info->input_dev);
 #if TOUCH_BOOSTER
-	set_dvfs_lock(info, 2);
-	pr_debug("[TSP] dvfs_lock free.\n ");
+	if (tb_switch == TOUCHBOOST_ON)
+	{
+		set_dvfs_lock(info, 2);
+		pr_debug("[TSP] dvfs_lock free.\n ");
+	}
 #endif
 }
 
@@ -693,7 +696,6 @@ static irqreturn_t mms_ts_interrupt(int irq, void *dev_id)
 				, angle, palm);
 #else
 			if (info->finger_state[id] != 0) {
-
 				dev_notice(&client->dev,
 					"finger [%d] up, palm %d\n", id, palm);
 			}
@@ -732,7 +734,6 @@ static irqreturn_t mms_ts_interrupt(int irq, void *dev_id)
 #else
 		if (info->finger_state[id] == 0) {
 			info->finger_state[id] = 1;
-
 			dev_notice(&client->dev,
 				"finger [%d] down, palm %d\n", id, palm);
 		}

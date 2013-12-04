@@ -8059,10 +8059,10 @@ void __init sched_init(void)
 	int i, j;
 	unsigned long alloc_size = 0, ptr;
 
+#ifdef CONFIG_FAIR_GROUP_SCHED
 	sec_gaf_supply_rqinfo(offsetof(struct rq, curr),
 			      offsetof(struct cfs_rq, rq));
 
-#ifdef CONFIG_FAIR_GROUP_SCHED
 	alloc_size += 2 * nr_cpu_ids * sizeof(void **);
 #endif
 #ifdef CONFIG_RT_GROUP_SCHED
@@ -8273,9 +8273,10 @@ void __might_sleep(const char *file, int line, int preempt_offset)
 		"BUG: sleeping function called from invalid context at %s:%d\n",
 			file, line);
 	printk(KERN_ERR
-		"in_atomic(): %d, irqs_disabled(): %d, pid: %d, name: %s\n",
+		"in_atomic(): %d, irqs_disabled(): %d, rcu_preempt_depth(): %d, "
+		"pid: %d, name: %s\n",
 			in_atomic(), irqs_disabled(),
-			current->pid, current->comm);
+			rcu_preempt_depth(), current->pid, current->comm);
 
 	debug_show_held_locks(current);
 	if (irqs_disabled())

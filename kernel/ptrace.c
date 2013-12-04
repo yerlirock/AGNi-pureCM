@@ -43,6 +43,13 @@ static bool ptrace_freeze_traced(struct task_struct *task)
 {
 	bool ret = false;
 
+/* FIXME: JOBCTL_LISTENING is not implemented yet in OMAP4 kernel */
+#if 0
+	/* Lockless, nobody but us can set this flag */
+	if (task->jobctl & JOBCTL_LISTENING)
+		return ret;
+#endif
+
 	spin_lock_irq(&task->sighand->siglock);
 	if (task_is_traced(task) && !__fatal_signal_pending(task)) {
 		task->state = __TASK_TRACED;

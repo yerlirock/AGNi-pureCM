@@ -9,7 +9,7 @@ export ARCH=arm
 
 if [ ! -f $KERNELDIR/.config ];
 then
-  make defconfig psn_p311x_v3.0_oc_defconfig
+  make defconfig psn_p311x_v3.1_oc_defconfig
 fi
 
 . $KERNELDIR/.config
@@ -26,7 +26,7 @@ rm $KERNELDIR/BUILT-P311x/zImage
 echo "BEGINING SGX540 PVR KM COMPILATION ..........."
 cd $KERNELDIR/pvr_source/eurasiacon/build/linux2/omap4430_android
 make clean
-make TARGET_PRODUCT="blaze_tablet" BUILD=release TARGET_SGX=540 PLATFORM_VERSION=4.4 || exit
+make TARGET_PRODUCT="blaze_tablet" BUILD=release TARGET_SGX=540 PLATFORM_VERSION=4.4.2 || exit
 make clean
 mv $KERNELDIR/pvr_source/eurasiacon/binary2_540_120_omap4430_android_release/target/*.ko $KERNELDIR/BUILT-P311x/lib/modules/
 rm -rf $KERNELDIR/pvr_source/eurasiacon/binary2_540_120_omap4430_android_release

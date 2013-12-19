@@ -49,6 +49,10 @@
 
 #include <asm/unaligned.h>
 
+#ifdef CONFIG_AGNI_OMNI_MODE
+#include "../keyboard/cypress/cypress-touchkey.h"
+#endif
+
 #ifdef CONFIG_INPUT_FBSUSPEND
 #ifdef CONFIG_DRM
 #include <drm/drm_backlight.h>
@@ -975,6 +979,12 @@ static irqreturn_t mms_ts_interrupt(int irq, void *dev_id)
 			if (info->panel == 'M') {
 				if (info->finger_state[id] != 0) {
 					info->finger_state[id] = 0;
+
+#ifdef CONFIG_AGNI_OMNI_MODE
+					// report state to cypress-touchkey for backlight timeout
+					touchscreen_state_report(0);
+#endif
+
 #ifdef CONFIG_LCD_FREQ_SWITCH
 					dev_notice(&client->dev,
 						"R(%c)(%d) [%2d]", info->ldi,
@@ -988,6 +998,12 @@ static irqreturn_t mms_ts_interrupt(int irq, void *dev_id)
 			} else {
 				if (info->finger_state[id] != 0) {
 					info->finger_state[id] = 0;
+
+#ifdef CONFIG_AGNI_OMNI_MODE
+					// report state to cypress-touchkey for backlight timeout
+					touchscreen_state_report(0);
+#endif
+
 					dev_notice(&client->dev,
 						"R [%2d]", id);
 				}
@@ -996,6 +1012,12 @@ static irqreturn_t mms_ts_interrupt(int irq, void *dev_id)
 			if (info->panel == 'M') {
 				if (info->finger_state[id] != 0) {
 					info->finger_state[id] = 0;
+
+#ifdef CONFIG_AGNI_OMNI_MODE
+					// report state to cypress-touchkey for backlight timeout
+					touchscreen_state_report(0);
+#endif
+
 #ifdef CONFIG_LCD_FREQ_SWITCH
 					dev_notice(&client->dev,
 						"R(%c)(%d) [%2d],([%4d],[%3d])",
@@ -1011,6 +1033,12 @@ static irqreturn_t mms_ts_interrupt(int irq, void *dev_id)
 			} else {
 				if (info->finger_state[id] != 0) {
 					info->finger_state[id] = 0;
+
+#ifdef CONFIG_AGNI_OMNI_MODE
+					// report state to cypress-touchkey for backlight timeout
+					touchscreen_state_report(0);
+#endif
+
 					dev_notice(&client->dev,
 						"R [%2d],([%4d],[%3d]),S:%d W:%d",
 						id, x, y, tmp[4], tmp[5]);
@@ -1040,6 +1068,12 @@ static irqreturn_t mms_ts_interrupt(int irq, void *dev_id)
 #ifdef CONFIG_SAMSUNG_PRODUCT_SHIP
 			if (info->finger_state[id] == 0) {
 				info->finger_state[id] = 1;
+
+#ifdef CONFIG_AGNI_OMNI_MODE
+				// report state to cypress-touchkey for backlight timeout
+				touchscreen_state_report(1);
+#endif
+
 #ifdef CONFIG_LCD_FREQ_SWITCH
 				dev_notice(&client->dev,
 					"P(%c)(%d) [%2d]", info->ldi,
@@ -1052,6 +1086,12 @@ static irqreturn_t mms_ts_interrupt(int irq, void *dev_id)
 #else
 			if (info->finger_state[id] == 0) {
 				info->finger_state[id] = 1;
+
+#ifdef CONFIG_AGNI_OMNI_MODE
+				// report state to cypress-touchkey for backlight timeout
+				touchscreen_state_report(1);
+#endif
+
 #ifdef CONFIG_LCD_FREQ_SWITCH
 				dev_notice(&client->dev,
 					"P(%c)(%d) [%2d],([%4d],[%3d]) w=%d, major=%d, minor=%d, angle=%d, palm=%d",
@@ -1082,12 +1122,24 @@ static irqreturn_t mms_ts_interrupt(int irq, void *dev_id)
 #ifdef CONFIG_SAMSUNG_PRODUCT_SHIP
 			if (info->finger_state[id] == 0) {
 				info->finger_state[id] = 1;
+
+#ifdef CONFIG_AGNI_OMNI_MODE				
+				// report state to cypress-touchkey for backlight timeout
+				touchscreen_state_report(1);
+#endif
+
 				dev_notice(&client->dev,
 					"P [%2d]", id);
 			}
 #else
 			if (info->finger_state[id] == 0) {
 				info->finger_state[id] = 1;
+
+#ifdef CONFIG_AGNI_OMNI_MODE				
+				// report state to cypress-touchkey for backlight timeout
+				touchscreen_state_report(1);
+#endif
+
 				dev_notice(&client->dev,
 					"P [%2d],([%4d],[%3d]),S:%d W:%d",
 					id, x, y, tmp[4], tmp[5]);

@@ -743,10 +743,4 @@ config AGNI_OMNI_MODE
 		Say Y here to enable AGNi OMNI-type MODE
 		(DEVIATES FROM OFFICIAL CYANOGENMOD IMPLEMENTATION)
 
-config TOUCH_WAKE
-	bool "Support for Touch Wake"
-	default y
-	help
-		Say Y here to enable Touch Wake
-		
 endif # MISC_DEVICES

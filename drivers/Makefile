@@ -135,6 +135,3 @@ obj-$(CONFIG_SAMSUNG_PHONE_SVNET) += modemctl/
 obj-$(CONFIG_PHONE_IPC_SPI) += phone_svn/
 obj-$(CONFIG_BATTERY_SAMSUNG)   += battery/
 
-ifeq (1, $(shell if [ -d ./drivers/exfat ]; then echo 1; fi))
-obj-$(CONFIG_SAMSUNG_EXFAT)	+= exfat/
-endif

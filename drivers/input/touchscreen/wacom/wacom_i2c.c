@@ -41,9 +41,8 @@ unsigned char screen_rotate;
 unsigned char user_hand = 1;
 static bool epen_reset_result;
 
-#ifdef WACOM_DEBOUNCEINT_BY_ESD
 static bool pen_insert_state;
-#endif
+
 static bool firmware_updating_state;
 
 static void wacom_i2c_enable_irq(struct wacom_i2c *wac_i2c, bool enable)
@@ -482,6 +481,9 @@ static void pen_insert_work(struct work_struct *work)
 	#endif
 #endif
 
+        pen_insert_state = !gpio_get_value(wac_i2c->gpio_pen_insert);
+        if (wac_i2c->invert_pen_insert)
+                pen_insert_state = !pen_insert_state;
 
 	printk(KERN_DEBUG "[E-PEN] %s : %d\n",
 		__func__, wac_i2c->pen_insert);
@@ -1023,6 +1025,20 @@ static ssize_t epen_reset_result_show(struct device *dev,
 	}
 }
 
+static ssize_t epen_pen_inserted_show(struct device *dev,
+                                      struct device_attribute *attr, char *buf)
+{
+        if (pen_insert_state) {
+                // pen inserted.
+                printk(KERN_DEBUG "[E-PEN] %s, pen is inserted.\n", __func__);
+                return sprintf(buf, "1");
+        } else {
+                printk(KERN_DEBUG "[E-PEN] %s, pen is not inserted.\n", __func__);
+                return sprintf(buf, "0");
+        }
+                
+}
+
 #ifdef WACOM_USE_AVE_TRANSITION
 static ssize_t epen_ave_store(struct device *dev,
 struct device_attribute *attr,
@@ -1207,6 +1223,9 @@ static DEVICE_ATTR(epen_tuning_version, S_IRUGO,
 			epen_tuning_version_show, NULL);
 #endif
 
+static DEVICE_ATTR(epen_pen_inserted,
+                                   S_IRUSR | S_IRGRP, epen_pen_inserted_show, NULL);
+
 #if defined(CONFIG_MACH_P4NOTE)
 static DEVICE_ATTR(epen_sampling_rate,
 		   S_IWUSR | S_IWGRP, NULL, epen_sampling_rate_store);
@@ -1248,6 +1267,7 @@ static struct attribute *epen_attributes[] = {
 	&dev_attr_epen_firm_update.attr,
 	&dev_attr_epen_firm_update_status.attr,
 	&dev_attr_epen_firm_version.attr,
+	&dev_attr_epen_pen_inserted.attr,
 #if defined(WACOM_IMPORT_FW_ALGO)
 	&dev_attr_epen_tuning_version.attr,
 #endif

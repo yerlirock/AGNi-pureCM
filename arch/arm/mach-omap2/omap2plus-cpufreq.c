@@ -155,7 +155,7 @@ static void unmask_mpu_static_dependency_value(void)
 			OMAP4430_L3_1_STATDEP_MASK;
 			OMAP4430_L3INIT_STATDEP_MASK;
 			OMAP4430_L4PER_STATDEP_MASK;*/
-	omap4_cminst_rmw_inst_reg_bits(mask, reg,
+		omap4_cminst_rmw_inst_reg_bits(mask, reg,
 					OMAP4430_CM1_PARTITION,
 					OMAP4430_CM1_MPU_INST,
 					OMAP4_CM_MPU_STATICDEP_OFFSET);
@@ -328,8 +328,6 @@ void omap_cpufreq_lock_free(unsigned int nId, int type)
 					cpufreq_lock->value[i];
 		}
 	}
-	pr_debug("[CPUFREQ] TYPE=%s nID=%d CurrLockFreq=%d KHz\n",
-		cpufreq_lock_type_str[type], nId, cpufreq_lock->cur_lock_freq);
 	mutex_unlock(&omap_cpufreq_alloc_lock);
 
 
@@ -581,6 +579,7 @@ static void omap_cpu_early_suspend(struct early_suspend *h)
 		if (cur > max_capped)
 			omap_cpufreq_scale(max_capped, cur);
 	}
+	mask_mpu_static_dependency_value();
 	mutex_unlock(&omap_cpufreq_lock);
 }
 
@@ -597,6 +596,7 @@ static void omap_cpu_late_resume(struct early_suspend *h)
 		if (cur != current_target_freq)
 			omap_cpufreq_scale(current_target_freq, cur);
 	}
+	unmask_mpu_static_dependency_value();
 	mutex_unlock(&omap_cpufreq_lock);
 }
 
@@ -867,7 +867,7 @@ out:
 
 struct freq_attr omap_cpufreq_attr_screen_off_freq = {
 	.attr = { .name = "screen_off_max_freq",
-		  .mode = 0644,
+		  .mode = 0664,
 		},
 	.show = show_screen_off_freq,
 	.store = store_screen_off_freq,

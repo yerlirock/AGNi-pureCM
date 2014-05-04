@@ -80,7 +80,6 @@
 #include "sched_cpupri.h"
 #include "workqueue_sched.h"
 #include "sched_autogroup.h"
-#include "smpboot.h"
 
 #define CREATE_TRACE_POINTS
 #include <trace/events/sched.h>

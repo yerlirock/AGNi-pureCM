@@ -40,6 +40,8 @@
 #endif
 #define EARLYSUSPEND_HOTPLUGLOCK 1
 
+#include <../kernel/power/power.h>
+
 /*
  * runqueue average
  */
@@ -180,7 +182,6 @@ static unsigned int get_nr_run_avg(void)
 #define DEF_START_DELAY				(0)
 
 #define UP_THRESHOLD_AT_MIN_FREQ		(40)
-#define FREQ_FOR_RESPONSIVENESS			(200000) /* (400000) */
 /* for fast decrease */
 #define FREQ_FOR_FAST_DOWN				(1200000)
 #define UP_THRESHOLD_AT_FAST_DOWN		(95)
@@ -284,7 +285,6 @@ static struct dbs_tuners {
 	int early_suspend;
 #endif
 	unsigned int up_threshold_at_min_freq;
-	unsigned int freq_for_responsiveness;
 } dbs_tuners_ins = {
 	.up_threshold = DEF_FREQUENCY_UP_THRESHOLD,
 	.sampling_down_factor = DEF_SAMPLING_DOWN_FACTOR,
@@ -304,7 +304,6 @@ static struct dbs_tuners {
 	.early_suspend = -1,
 #endif
 	.up_threshold_at_min_freq = UP_THRESHOLD_AT_MIN_FREQ,
-	.freq_for_responsiveness = FREQ_FOR_RESPONSIVENESS,
 };
 
 
@@ -502,7 +501,6 @@ show_one(max_cpu_lock, max_cpu_lock);
 show_one(min_cpu_lock, min_cpu_lock);
 show_one(dvfs_debug, dvfs_debug);
 show_one(up_threshold_at_min_freq, up_threshold_at_min_freq);
-show_one(freq_for_responsiveness, freq_for_responsiveness);
 static ssize_t show_hotplug_lock(struct kobject *kobj,
 				struct attribute *attr, char *buf)
 {
@@ -849,18 +847,6 @@ static ssize_t store_up_threshold_at_min_freq(struct kobject *a, struct attribut
 	return count;
 }
 
-static ssize_t store_freq_for_responsiveness(struct kobject *a, struct attribute *b,
-				   const char *buf, size_t count)
-{
-	unsigned int input;
-	int ret;
-	ret = sscanf(buf, "%u", &input);
-	if (ret != 1)
-		return -EINVAL;
-	dbs_tuners_ins.freq_for_responsiveness = input;
-	return count;
-}
-
 define_one_global_rw(sampling_rate);
 define_one_global_rw(io_is_busy);
 define_one_global_rw(up_threshold);
@@ -878,7 +864,6 @@ define_one_global_rw(min_cpu_lock);
 define_one_global_rw(hotplug_lock);
 define_one_global_rw(dvfs_debug);
 define_one_global_rw(up_threshold_at_min_freq);
-define_one_global_rw(freq_for_responsiveness);
 
 static struct attribute *dbs_attributes[] = {
 	&sampling_rate_min.attr,
@@ -917,7 +902,6 @@ static struct attribute *dbs_attributes[] = {
 	&hotplug_rq_4_0.attr,
 #endif
 	&up_threshold_at_min_freq.attr,
-	&freq_for_responsiveness.attr,
 	NULL
 };
 
@@ -1131,6 +1115,8 @@ static int check_down(void)
 	return 0;
 }
 
+static bool arter97_prev_lock = false;
+
 static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 {
 	unsigned int max_load_freq;
@@ -1159,6 +1145,25 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 
 	/* Get Absolute Load - in terms of freq */
 	max_load_freq = 0;
+
+	/*
+	 *  firelock by arter97
+	 *
+	 *  Leave ONLY cpu0 online and kill everything
+	 *  when current frequency equals to minimum frequency
+	 *  and restore everything to default if not
+	 *
+	 *  2014.01.26
+	 */
+	if (!arter97_prev_lock && (policy->cur == policy->min)) {
+		atomic_set(&g_hotplug_lock, 1);
+		apply_hotplug_lock();
+		arter97_prev_lock = true;
+	} else if(arter97_prev_lock) {
+		atomic_set(&g_hotplug_lock, -1);
+		apply_hotplug_lock();
+		arter97_prev_lock = false;
+	}
 
 	for_each_cpu(j, policy->cpus) {
 		struct cpu_dbs_info_s *j_dbs_info;
@@ -1244,11 +1249,7 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 	if (hotplug_history->num_hist  == max_hotplug_rate)
 		hotplug_history->num_hist = 0;
 
-	/* Check for frequency increase */
-	if (policy->cur < dbs_tuners_ins.freq_for_responsiveness)
-		up_threshold = dbs_tuners_ins.up_threshold_at_min_freq;
 	/* for fast frequency decrease */
-	else
 		up_threshold = dbs_tuners_ins.up_threshold;
 
 	if (max_load_freq > up_threshold * policy->cur) {
@@ -1308,10 +1309,6 @@ static void dbs_check_cpu(struct cpu_dbs_info_s *this_dbs_info)
 
 		down_thres = dbs_tuners_ins.up_threshold_at_min_freq
 			- dbs_tuners_ins.down_differential;
-
-		if (freq_next < dbs_tuners_ins.freq_for_responsiveness
-			&& (max_load_freq / freq_next) > down_thres)
-			freq_next = dbs_tuners_ins.freq_for_responsiveness;
 
 		if (policy->cur == freq_next)
 			return;
@@ -1428,6 +1425,7 @@ static void cpufreq_pegasusq_early_suspend(struct early_suspend *h)
 }
 static void cpufreq_pegasusq_late_resume(struct early_suspend *h)
 {
+        struct cpu_dbs_info_s *dbs_info;
 #if EARLYSUSPEND_HOTPLUGLOCK
 	atomic_set(&g_hotplug_lock, dbs_tuners_ins.early_suspend);
 #endif

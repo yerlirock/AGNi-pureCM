@@ -1761,9 +1761,6 @@ SYSCALL_DEFINE5(prctl, int, option, unsigned long, arg2, unsigned long, arg3,
 		case PR_GET_TIMERSLACK:
 			error = current->timer_slack_ns;
 			break;
-		case PR_GET_EFFECTIVE_TIMERSLACK:
-			error = task_get_effective_timer_slack(current);
-			break;
 		case PR_SET_TIMERSLACK:
 			if (arg2 <= 0)
 				current->timer_slack_ns =
@@ -1807,7 +1804,7 @@ SYSCALL_DEFINE5(prctl, int, option, unsigned long, arg2, unsigned long, arg3,
 			else
 				error = PR_MCE_KILL_DEFAULT;
 			break;
-/*		case PR_SET_NO_NEW_PRIVS:
+		case PR_SET_NO_NEW_PRIVS:
 			if (arg2 != 1 || arg3 || arg4 || arg5)
 				return -EINVAL;
 
@@ -1817,7 +1814,6 @@ SYSCALL_DEFINE5(prctl, int, option, unsigned long, arg2, unsigned long, arg3,
 			if (arg2 || arg3 || arg4 || arg5)
 				return -EINVAL;
 			return current->no_new_privs ? 1 : 0;
-*/
 		default:
 			error = -EINVAL;
 			break;

@@ -36,6 +36,9 @@
 #include <linux/suspend.h>
 #include <linux/slab.h>
 
+// dual core only
+#define CONFIG_CPU_EXYNOS4210
+
 //a hack to make comparisons easier while having different structs in pegasusq and lulzactiveq
 #define hotplug_history hotplug_lulzq_history
 #define dvfs_workqueue dvfs_lulzq_workqueue
@@ -561,11 +564,13 @@ static void cpufreq_lulzactive_timer(unsigned long data)
 				}
 			
 				// apply pump_up_step by tegrak
-				index -= pump_up_step;
-				if (index < 0)
-					index = 0;
+				index += pump_up_step;
+				if (index >= pcpu->lulzfreq_table_size) {
+				        index = pcpu->lulzfreq_table_size - 1;
 			
-				new_freq = pcpu->lulzfreq_table[index].frequency;
+        			new_freq = (pcpu->policy->cur < pcpu->policy->max) ? 
+				(pcpu->lulzfreq_table[index].frequency) :
+				(pcpu->policy->max);
 			}
 			else
 				new_freq = pcpu->policy->max;
@@ -595,9 +600,10 @@ static void cpufreq_lulzactive_timer(unsigned long data)
 			}
 			
 			// apply pump_down_step by tegrak
-			index += pump_down_step;
-			if (index >= pcpu->lulzfreq_table_size) {
-				index = pcpu->lulzfreq_table_size - 1;
+                        index -= pump_down_step;
+			if (index < 0)
+				index = 0;
+
 			}
 			
 			new_freq = (pcpu->policy->cur > pcpu->policy->min) ? 

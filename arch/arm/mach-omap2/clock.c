@@ -340,8 +340,7 @@ int omap2_clk_enable(struct clk *clk)
 		trace_clock_enable(clk->name, 1, smp_processor_id());
 		ret = clk->ops->enable(clk);
 		if (ret) {
-			WARN(1, "clock: %s: could not enable: %d\n",
-			     clk->name, ret);
+			WARN(1, "clock: %s: could not enable: %d\n", clk->name, ret);
 			goto oce_err3;
 		}
 	}

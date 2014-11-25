@@ -450,7 +450,6 @@ static void espresso10_twl6030_init(void)
 	if (ret)
 		pr_err("%s: BBSPOR_CFG write fail!\n", __func__);
 
-
 	if (system_rev >= 8) {
 		ret = twl_i2c_read_u8(TWL6030_MODULE_ID0,
 				&val, TWL6030_CFG_LDO_PD2);
@@ -601,7 +600,6 @@ static struct twl4030_platform_data espresso10_twl6032_pdata_rev02 = {
 #endif
 	.madc		= &espresso10_madc,
 };
-
 
 struct twl4030_rtc_data espresso10_rtc = {
 	.auto_comp = 1,
@@ -762,7 +760,6 @@ void __init omap4_espresso10_pmic_init(void)
 	 */
 	if (board_type == SEC_MACHINE_ESPRESSO10_USA_BBY && system_rev >= 7)
 		espresso10_twl6032_pdata_rev03.ldoln = &espresso10_vdac;
-
 
 	/*
 	 * Drive MSECURE high for TWL6030 write access.

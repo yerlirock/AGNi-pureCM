@@ -122,8 +122,8 @@ static struct clockdomain *emif_clkdm, *mpuss_clkdm;
  *
  * CDDS no: OMAP4460-1.0BUG00291 (OMAP official errata ID yet to be available).
  */
-#define OMAP4_PM_ERRATUM_LPDDR_CLK_IO_i736		BIT(5)
-#define LPDDR_WD_PULL_DOWN				0x02
+#define OMAP4_PM_ERRATUM_LPDDR_CLK_IO_i736	BIT(5)
+#define LPDDR_WD_PULL_DOWN			0x02
 
 /*
  * The OFF mode isn't fully supported for OMAP4430GP ES2.0 - ES2.2
@@ -204,8 +204,7 @@ void omap4_trigger_ioctrl(void)
 				OMAP4430_WUCLK_STATUS_SHIFT) == 1),
 			MAX_IOPAD_LATCH_TIME, i);
 	if (i == MAX_IOPAD_LATCH_TIME)
-		pr_err("%s: Max IO latch time reached for WUCLKIN enable\n",
-			__func__);
+		pr_err("%s: Max IO latch time reached for WUCLKIN enable\n", __func__);
 
 	/* Trigger WUCLKIN disable */
 	omap4_prminst_rmw_inst_reg_bits(OMAP4430_WUCLK_CTRL_MASK, 0x0,
@@ -219,8 +218,7 @@ void omap4_trigger_ioctrl(void)
 				OMAP4430_WUCLK_STATUS_SHIFT) == 0),
 			MAX_IOPAD_LATCH_TIME, i);
 	if (i == MAX_IOPAD_LATCH_TIME)
-		pr_err("%s: Max IO latch time reached for WUCLKIN disable\n",
-			__func__);
+		pr_err("%s: Max IO latch time reached for WUCLKIN disable\n", __func__);
 
 	return;
 }
@@ -271,8 +269,7 @@ void omap4_enter_sleep(unsigned int cpu, unsigned int power_state, bool suspend)
 			/* Enable MPU-EMIF Static Dependency around WFI */
 			if (clkdm_add_wkdep(mpuss_clkdm, emif_clkdm))
 				pr_err("%s: Failed to Add wkdep %s->%s\n",
-					__func__, mpuss_clkdm->name,
-					emif_clkdm->name);
+					__func__, mpuss_clkdm->name, emif_clkdm->name);
 			else
 				staticdep_wa_applied = 1;
 
@@ -324,7 +321,6 @@ void omap4_enter_sleep(unsigned int cpu, unsigned int power_state, bool suspend)
 		omap4_sar_overwrite();
 		omap4_cm_prepare_off();
 		omap4_dpll_prepare_off();
-
 
 		omap4_prcm_control_lpddr_strength(true);
 		/* Extend Non-EMIF I/O isolation */
@@ -403,8 +399,7 @@ abort_device_off:
 		/* Disable MPU-EMIF Static Dependency on WFI exit */
 		else if (clkdm_del_wkdep(mpuss_clkdm, emif_clkdm))
 			pr_err("%s: Failed to remove wkdep %s->%s\n",
-			__func__, mpuss_clkdm->name,
-			emif_clkdm->name);
+			__func__, mpuss_clkdm->name, emif_clkdm->name);
 		/* Configures MEMIF clockdomain back to HW_AUTO */
 		clkdm_allow_idle(emif_clkdm);
 	}
@@ -427,8 +422,7 @@ static void _print_wakeirq(int irq)
 	else if (!desc || !desc->action || !desc->action->name)
 		pr_info("Resume caused by IRQ %d\n", irq);
 	else
-		pr_info("Resume caused by IRQ %d, %s\n", irq,
-			desc->action->name);
+		pr_info("Resume caused by IRQ %d, %s\n", irq, desc->action->name);
 }
 
 static void _print_gpio_wakeirq(int irq)
@@ -513,8 +507,7 @@ static void _print_gpio_wakeirq(int irq)
 	goto out;
 
 punt:
-	pr_info("Resume caused by IRQ %d, unknown GPIO%d interrupt\n", irq,
-		bank + 1);
+	pr_info("Resume caused by IRQ %d, unknown GPIO%d interrupt\n", irq, bank + 1);
 
 out:
 	if (restoremod)
@@ -560,8 +553,7 @@ static void _print_prcm_wakeirq(int irq)
 
 	if (prcm_irqs1 & ~OMAP4430_IO_ST_MASK || !iopad_wake_found ||
 	    prcm_irqs2)
-		pr_info("Resume caused by IRQ %d, prcm: 0x%x 0x%x\n", irq,
-			prcm_irqs1, prcm_irqs2);
+		pr_info("Resume caused by IRQ %d, prcm: 0x%x 0x%x\n", irq, prcm_irqs1, prcm_irqs2);
 }
 
 static void omap4_print_wakeirq(void)
@@ -946,7 +938,6 @@ static int __init clkdms_setup(struct clockdomain *clkdm, void *unused)
 	return 0;
 }
 
-
 static int __init pwrdms_setup(struct powerdomain *pwrdm, void *unused)
 {
 	struct power_state *pwrst;
@@ -1183,7 +1174,6 @@ no_32k:
 	if (is_pm44xx_erratum(IO_WAKEUP_CLOCK_NOT_RECYCLED_i612))
 		omap4_trigger_ioctrl();
 }
-
 
 /* omap_pm_clear_dsp_wake_up - SW WA for hardcoded wakeup dependency
 * from HSI to DSP
@@ -1433,8 +1423,7 @@ static void __init omap4_pm_setup_errata(void)
 static int __init omap4_pm_init(void)
 {
 	int ret = 0;
-	struct clockdomain *l3_1_clkdm, *l4wkup, *sdma_clkdm, *l3_init_clkdm, \
-								*l3_gfx_clkdm;
+	struct clockdomain *l3_1_clkdm, *l4wkup;
 	struct clockdomain *ducati_clkdm, *l3_2_clkdm;
 	struct clockdomain *l4_per, *l4_cfg, *ivahd_clkdm;
 
@@ -1502,14 +1491,8 @@ static int __init omap4_pm_init(void)
 	l4wkup = clkdm_lookup("l4_wkup_clkdm");
 	ivahd_clkdm = clkdm_lookup("ivahd_clkdm");
 
-	sdma_clkdm = clkdm_lookup("l3_dma_clkdm");
-	l3_init_clkdm = clkdm_lookup("l3_init_clkdm");
-
-	l3_gfx_clkdm = clkdm_lookup("l3_gfx_clkdm");
-
 	if ((!mpuss_clkdm) || (!emif_clkdm) || (!l3_1_clkdm) || (!l4wkup) ||
-		(!l3_2_clkdm) || (!ducati_clkdm) || (!l4_per) || \
-						(!l4_cfg) || (!l3_gfx_clkdm))
+		(!l3_2_clkdm) || (!ducati_clkdm) || (!l4_per) || (!l4_cfg))
 		goto err2;
 
 	/* if we cannot ever enable static dependency. */
@@ -1528,7 +1511,6 @@ static int __init omap4_pm_init(void)
 		ret |= clkdm_add_wkdep(ducati_clkdm, emif_clkdm);
 		ret |= clkdm_add_wkdep(ivahd_clkdm, emif_clkdm);
 		ret |= clkdm_add_wkdep(mpuss_clkdm, l4wkup);
-		ret |= clkdm_add_wkdep(l3_gfx_clkdm, emif_clkdm);
 
 		if (ret) {
 			pr_err("Failed to add MPUSS -> L3/EMIF, DUCATI -> L3"
@@ -1561,16 +1543,6 @@ static int __init omap4_pm_init(void)
 		ret |= clkdm_add_wkdep(ducati_clkdm, l4_per);
 		ret |= clkdm_add_wkdep(ducati_clkdm, l4_cfg);
 
-		/* Adding all SDMA static dependencies and keeping
-		   only L3_2, before we clear.
-		*/
-		ret |=  clkdm_add_wkdep(sdma_clkdm, emif_clkdm);
-		ret |=  clkdm_add_wkdep(sdma_clkdm, l3_1_clkdm);
-		ret |=  clkdm_add_wkdep(sdma_clkdm, l3_init_clkdm);
-		ret |=  clkdm_add_wkdep(sdma_clkdm, l4wkup);
-		ret |=  clkdm_add_wkdep(sdma_clkdm, l4_per);
-		ret |=  clkdm_add_wkdep(sdma_clkdm, l4_cfg);
-
 		if (ret) {
 			pr_err("Failed to add MPUSS and DUCATI -> "
 			       "L4* and L3_1 wakeup dependency\n");
@@ -1578,18 +1550,6 @@ static int __init omap4_pm_init(void)
 		}
 		pr_info("OMAP4 PM: Static dependency added between"
 			" MPUSS and DUCATI <-> L4_PER/CFG and L3_1.\n");
-		/* clearing all SDMA static dependencies and keeping
-		   only L3_2.
-		*/
-		ret  =  clkdm_del_wkdep(sdma_clkdm, emif_clkdm);
-		ret |=  clkdm_del_wkdep(sdma_clkdm, l3_1_clkdm);
-		ret |=  clkdm_del_wkdep(sdma_clkdm, l3_init_clkdm);
-		ret |=  clkdm_del_wkdep(sdma_clkdm, l4wkup);
-		ret |=  clkdm_del_wkdep(sdma_clkdm, l4_per);
-		ret |=  clkdm_del_wkdep(sdma_clkdm, l4_cfg);
-
-		if (ret)
-			pr_err("Failed to Remove wkdep For SDMA\n");
 	}
 
 	(void) clkdm_for_each(clkdms_setup, NULL);

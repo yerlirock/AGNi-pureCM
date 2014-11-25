@@ -852,9 +852,7 @@ static irqreturn_t emif_threaded_isr(int irq, void *dev_id)
 		pr_emerg("%s %d: SDRAM temperature exceeds operating"
 			"limit.. Shutdown system...\n", __func__, emif_nr + 1);
 
-		/*
 		kernel_power_off();
-		*/
 	}
 
 	return IRQ_HANDLED;
@@ -1235,7 +1233,6 @@ static int __init omap_emif_device_init(void)
 }
 postcore_initcall(omap_emif_device_init);
 
-
 /* We need to disable interrupts of the EMIF
  * module, because in a warm reboot scenario, there
  * may be a pending irq that is not serviced and emif
@@ -1300,8 +1297,6 @@ int emif_driver_suspend(struct platform_device *pdev, pm_message_t state)
 
 	__raw_writel(temp, base + OMAP44XX_EMIF_IRQSTATUS_SYS);
 	__raw_writel(temp, base + OMAP44XX_EMIF_IRQSTATUS_LL);
-
-
 
 	return 0;
 }
@@ -1422,7 +1417,6 @@ int omap_emif_setup_registers(u32 freq, u32 volt_state)
 		err = do_emif_setup_registers(EMIF2, freq, volt_state);
 	return err;
 }
-
 
 /*
  * omap_emif_frequency_pre_notify - Disable DDR self refresh of both EMIFs

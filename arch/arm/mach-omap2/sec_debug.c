@@ -1137,7 +1137,6 @@ __err:
 
 __setup("sec_debug=", sec_dbg_setup);
 
-
 #ifdef CONFIG_SEC_DEBUG_USER
 void sec_user_fault_dump(void)
 {

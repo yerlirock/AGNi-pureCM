@@ -2457,7 +2457,6 @@ static struct omap_hwmod omap44xx_emif2_hwmod = {
 	.omap_chip	= OMAP_CHIP_INIT(CHIP_IS_OMAP44XX),
 };
 
-
 /*
  * 'fdif' class
  * face detection hw accelerator module
@@ -4939,11 +4938,6 @@ static struct omap_hwmod_class omap44xx_timer_hwmod_class = {
 	.name	= "timer",
 	.sysc	= &omap44xx_timer_sysc,
 	.rev	= OMAP_TIMER_IP_VERSION_2,
-};
-
-/* secure timer can assign this to .dev_attr field */
-static struct omap_secure_timer_dev_attr secure_timer_dev_attr = {
-	.is_secure_timer        = true,
 };
 
 /* timer1 */

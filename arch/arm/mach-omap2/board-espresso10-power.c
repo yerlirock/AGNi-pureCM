@@ -261,10 +261,8 @@ static int check_charger_type(void)
 			CABLE_TYPE_AC :
 			CABLE_TYPE_USB;
 
-	pr_info("%s : Charger type is [%s], adc = %d\n",
-		__func__,
-		cable_type == CABLE_TYPE_AC ? "TA" : "USB",
-		adc);
+	pr_info("%s : Charger type is [%s], adc = %d\n", __func__,
+		cable_type == CABLE_TYPE_AC ? "TA" : "USB", adc);
 
 #ifdef CONFIG_SAMSUNG_Y_CABLE
 	if (adc_val > 2606 && adc_val < 2855) {

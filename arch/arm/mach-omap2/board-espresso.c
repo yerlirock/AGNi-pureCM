@@ -56,7 +56,6 @@
 #include "sec_debug.h"
 #include "sec_getlog.h"
 #include "sec_muxtbl.h"
-#include "sec_log_buf.h"
 
 #define ESPRESSO_MEM_BANK_0_SIZE	0x20000000
 #define ESPRESSO_MEM_BANK_0_ADDR	0x80000000
@@ -245,11 +244,11 @@ static void __init espresso_init(void)
 	/* Allow HSI omap_device to be registered later */
 	omap_hsi_allow_registration();
 #endif
-
+#ifdef CONFIG_SEC_DEBUG
 	if (sec_debug_get_level())
 		platform_add_devices(espresso_dbg_devices,
 				     ARRAY_SIZE(espresso_dbg_devices));
-
+#endif
 	sec_common_init_post();
 }
 
@@ -283,6 +282,7 @@ static void __init espresso_reserve(void)
 	omap4_espresso_init_carveout_sizes(get_omap_ion_platform_data());
 	omap_ion_init();
 #endif
+#ifdef CONFIG_SEC_DEBUG
 	/* do the static reservations first */
 	if (sec_debug_get_level()) {
 #if defined(CONFIG_ANDROID_RAM_CONSOLE)
@@ -294,6 +294,7 @@ static void __init espresso_reserve(void)
 				ESPRESSO_RAMOOPS_SIZE);
 #endif
 	}
+#endif
 	memblock_remove(PHYS_ADDR_SMC_MEM, PHYS_ADDR_SMC_SIZE);
 	memblock_remove(PHYS_ADDR_DUCATI_MEM, PHYS_ADDR_DUCATI_SIZE);
 
@@ -303,8 +304,6 @@ static void __init espresso_reserve(void)
 				    OMAP4_ION_HEAP_SECURE_INPUT_SIZE +
 				    OMAP4_ION_HEAP_SECURE_OUTPUT_WFDHDCP_SIZE);
 	omap_reserve();
-
-	sec_log_buf_reserve();
 }
 
 MACHINE_START(OMAP4_SAMSUNG, "Espresso")

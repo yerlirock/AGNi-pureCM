@@ -13,6 +13,7 @@
  * it under the terms of the GNU General Public License version 2 as
  * published by the Free Software Foundation.
  */
+
 #undef DEBUG
 
 #include <linux/module.h>
@@ -248,7 +249,6 @@ static void __init omap_map_sram(void)
 			nr_desc = 2;
 		}
 	}
-
 
 	iotable_init(omap_sram_io_desc, nr_desc);
 

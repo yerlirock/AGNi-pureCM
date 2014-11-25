@@ -454,7 +454,6 @@ static void flush_iopgd_range(u32 *first, u32 *last)
 	outer_flush_range(virt_to_phys(first), virt_to_phys(last));
 }
 
-
 static void flush_iopte_range(u32 *first, u32 *last)
 {
 	dmac_flush_range(first, last);

@@ -42,8 +42,6 @@ omap_otg_init(struct omap_usb_config *config)
 
 	syscon = omap_readl(OTG_SYSCON_1) & 0xffff;
 
-	//omap_writew(0, OTG_IRQ_EN);
-
 	/* pin muxing and transceiver pinouts */
 	if (config->pins[0] > 2)	/* alt pingroup 2 */
 		alt_pingroup = 1;
@@ -66,6 +64,7 @@ omap_otg_init(struct omap_usb_config *config)
 	else if (config->pins[0])
 		printk(", usb0 %d wires%s", config->pins[0],
 			is_usb0_device(config) ? " (dev)" : "");
+
 	if (config->pins[1])
 		printk(", usb1 %d wires", config->pins[1]);
 	if (!alt_pingroup && config->pins[2])
@@ -120,7 +119,6 @@ omap_otg_init(struct omap_usb_config *config)
 	}
 #endif
 	omap_writel(syscon, OTG_SYSCON_1);
-
 	status = 0;
 }
 

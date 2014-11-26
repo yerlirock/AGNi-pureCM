@@ -587,7 +587,7 @@
 #define ZZMOOVE_VERSION "1.0 beta1"
 
 // ZZ: support for 2,4 or 8 cores (this will enable/disable hotplug threshold tuneables)
-#define MAX_CORES					(4)
+#define MAX_CORES					(2)
 
 // ZZ: enable/disable hotplug support
 #define ENABLE_HOTPLUGGING

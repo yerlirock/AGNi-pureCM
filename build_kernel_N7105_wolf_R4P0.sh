@@ -17,14 +17,14 @@ mv .git .git-halt
 cd $KERNELDIR/
 make -j2 || exit 1
 
-mkdir -p $KERNELDIR/BUILT_N7105_wolf/lib/modules
+mkdir -p $KERNELDIR/BUILT_N7105_R4P0_wolf/lib/modules
 
-rm $KERNELDIR/BUILT_N7105_wolf/lib/modules/*
-rm $KERNELDIR/BUILT_N7105_wolf/zImage
+rm $KERNELDIR/BUILT_N7105_R4P0_wolf/lib/modules/*
+rm $KERNELDIR/BUILT_N7105_R4P0_wolf/zImage
 
-find -name '*.ko' -exec cp -av {} $KERNELDIR/BUILT_N7105_wolf/lib/modules/ \;
-${CROSS_COMPILE}strip --strip-unneeded $KERNELDIR/BUILT_N7105_wolf/lib/modules/*
-cp $KERNELDIR/arch/arm/boot/zImage $KERNELDIR/BUILT_N7105_wolf/
+find -name '*.ko' -exec cp -av {} $KERNELDIR/BUILT_N7105_R4P0_wolf/lib/modules/ \;
+${CROSS_COMPILE}strip --strip-unneeded $KERNELDIR/BUILT_N7105_R4P0_wolf/lib/modules/*
+cp $KERNELDIR/arch/arm/boot/zImage $KERNELDIR/BUILT_N7105_R4P0_wolf/
 
 mv .git-halt .git
 

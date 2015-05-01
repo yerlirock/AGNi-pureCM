@@ -41,9 +41,6 @@
 #include <mach/regs-usb-phy.h>
 #include <plat/usb-phy.h>
 
-#ifdef CONFIG_CPU_PM
-#include <linux/cpu_pm.h>
-#endif
 
 #ifdef CONFIG_ARM_TRUSTZONE
 #define REG_DIRECTGO_ADDR	(S5P_VA_SYSRAM_NS + 0x24)
@@ -571,10 +568,6 @@ static int exynos4_enter_core0_aftr(struct cpuidle_device *dev,
 
 	local_irq_disable();
 
-#ifdef CONFIG_CPU_PM
-	cpu_pm_enter();
-#endif
-
 	if (log_en)
 		pr_info("+++aftr\n");
 
@@ -637,9 +630,6 @@ early_wakeup:
 	if (log_en)
 		pr_info("---aftr\n");
 
-#ifdef CONFIG_CPU_PM
-	cpu_pm_exit();
-#endif
 	local_irq_enable();
 	idle_time = (after.tv_sec - before.tv_sec) * USEC_PER_SEC +
 		    (after.tv_usec - before.tv_usec);
@@ -672,10 +662,6 @@ static int exynos4_enter_core0_lpa(struct cpuidle_device *dev,
 	bt_uart_rts_ctrl(1);
 #endif
 	local_irq_disable();
-
-#ifdef CONFIG_CPU_PM
-	cpu_pm_enter();
-#endif
 
 #if defined(CONFIG_INTERNAL_MODEM_IF) || defined(CONFIG_SAMSUNG_PHONE_TTY)
 	gpio_set_value(GPIO_PDA_ACTIVE, 0);
@@ -775,10 +761,6 @@ early_wakeup:
 		pr_debug("---lpa\n");
 #if defined(CONFIG_INTERNAL_MODEM_IF) || defined(CONFIG_SAMSUNG_PHONE_TTY)
 	gpio_set_value(GPIO_PDA_ACTIVE, 1);
-#endif
-
-#ifdef CONFIG_CPU_PM
-	cpu_pm_exit();
 #endif
 
 	local_irq_enable();

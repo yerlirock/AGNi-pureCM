@@ -52,7 +52,6 @@ static bool touchwake_enabled = false;
 static bool keypower_mode = false;
 extern unsigned int charge_info_cable_type;
 
-static bool touchwake_enabled = false;
 static bool touch_disabled = false;
 static bool device_suspended = false;
 static bool timed_out = true;

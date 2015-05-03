@@ -17,13 +17,13 @@ mv .git .git-halt
 cd $KERNELDIR/
 make -j3 || exit 1
 
-mkdir -p $KERNELDIR/BUILT_N7100/lib/modules
+mkdir -p $KERNELDIR/BUILT_N7100_smdk4x12/lib/modules
 
-rm $KERNELDIR/BUILT_N7100/lib/modules/*
-rm $KERNELDIR/BUILT_N7100/zImage
+rm $KERNELDIR/BUILT_N7100_smdk4x12/lib/modules/*
+rm $KERNELDIR/BUILT_N7100_smdk4x12/zImage
 
-find -name '*.ko' -exec cp -av {} $KERNELDIR/BUILT_N7100/lib/modules/ \;
-${CROSS_COMPILE}strip --strip-unneeded $KERNELDIR/BUILT_N7100/lib/modules/*
-cp $KERNELDIR/arch/arm/boot/zImage $KERNELDIR/BUILT_N7100/
+find -name '*.ko' -exec cp -av {} $KERNELDIR/BUILT_N7100_smdk4x12/lib/modules/ \;
+${CROSS_COMPILE}strip --strip-unneeded $KERNELDIR/BUILT_N7100_smdk4x12/lib/modules/*
+cp $KERNELDIR/arch/arm/boot/zImage $KERNELDIR/BUILT_N7100_smdk4x12/
 
 mv .git-halt .git

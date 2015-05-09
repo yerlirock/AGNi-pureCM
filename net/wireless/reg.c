@@ -852,7 +852,7 @@ static void handle_channel(struct wiphy *wiphy,
 			return;
 
 		REG_DBG_PRINT("Disabling freq %d MHz\n", chan->center_freq);
-		chan->flags |= IEEE80211_CHAN_DISABLED;
+		chan->flags = IEEE80211_CHAN_DISABLED;
 		return;
 	}
 
@@ -1967,6 +1967,21 @@ static void print_rd_rules(const struct ieee80211_regdomain *rd)
 	}
 }
 
+bool reg_supported_dfs_region(u8 dfs_region)
+{
+	switch (dfs_region) {
+	case NL80211_DFS_UNSET:
+	case NL80211_DFS_FCC:
+	case NL80211_DFS_ETSI:
+	case NL80211_DFS_JP:
+		return true;
+	default:
+		REG_DBG_PRINT("Ignoring uknown DFS master region: %d\n",
+			      dfs_region);
+		return false;
+	}
+}
+
 static void print_regdomain(const struct ieee80211_regdomain *rd)
 {
 
@@ -2106,15 +2121,10 @@ static int __set_regdom(const struct ieee80211_regdomain *rd)
 		 * However if a driver requested this specific regulatory
 		 * domain we keep it for its private use
 		 */
-		if (last_request->initiator == NL80211_REGDOM_SET_BY_DRIVER) {
-			const struct ieee80211_regdomain *tmp;
-
-			tmp = request_wiphy->regd;
+		if (last_request->initiator == NL80211_REGDOM_SET_BY_DRIVER)
 			request_wiphy->regd = rd;
-			kfree(tmp);
-		} else {
+		else
 			kfree(rd);
-		}
 
 		rd = NULL;
 

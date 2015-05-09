@@ -1,13 +1,13 @@
 #!/bin/sh
 export KERNELDIR=`readlink -f .`
 . ~/AGNi_stamp_CM.sh
-. ~/gcc_4.9.3_linaro_cortex-a9.sh
+. ~/gcc_prebuilt_4.8.sh
 
 export ARCH=arm
 
 if [ ! -f $KERNELDIR/.config ];
 then
-  make defconfig psn_i9300_new_defconfig
+  make defconfig psn_i9300_R4P0_new_defconfig
 fi
 
 . $KERNELDIR/.config

@@ -13,7 +13,6 @@ struct mmc_ioc_cmd {
 	unsigned int flags;
 	unsigned int blksz;
 	unsigned int blocks;
-	unsigned int ext_flags; /* for special behavior  */
 
 	/*
 	 * Sleep at least postsleep_min_us useconds, and at most
@@ -44,7 +43,8 @@ struct mmc_ioc_cmd {
 #define mmc_ioc_cmd_set_data(ic, ptr) ic.data_ptr = (__u64)(unsigned long) ptr
 
 #define MMC_IOC_CMD _IOWR(MMC_BLOCK_MAJOR, 0, struct mmc_ioc_cmd)
-
+#define MMC_IOC_BUSWIDTH _IO(MMC_BLOCK_MAJOR, 0xCB)
+#define MMC_IOC_CLOCK _IO(MMC_BLOCK_MAJOR, 0xCC)
 /*
  * Since this ioctl is only meant to enhance (and not replace) normal access
  * to the mmc bus device, an upper data transfer limit of MMC_IOC_MAX_BYTES

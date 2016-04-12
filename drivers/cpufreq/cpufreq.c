@@ -403,57 +403,7 @@ static ssize_t store_##file_name					\
 }
 
 store_one(scaling_min_freq, min);
-
-/* Yank555.lu - while storing scaling_max also set cpufreq_max_limit accordingly */
-/* store_one(scaling_max_freq, max); */
-static ssize_t store_scaling_max_freq
-(struct cpufreq_policy *policy, const char *buf, size_t count)
-{
-#ifdef CONFIG_DVFS_LIMIT
-	unsigned int cpufreq_level;
-	int lock_ret;
-#endif
-	unsigned int ret = -EINVAL;
-	struct cpufreq_policy new_policy;
-
-	ret = cpufreq_get_policy(&new_policy, policy->cpu);
-	if (ret)
-		return -EINVAL;
-
-	ret = sscanf(buf, "%u", &new_policy.max);
-	if (ret != 1)
-		return -EINVAL;
-
-#if defined(CONFIG_MACH_M0) || defined(CONFIG_MACH_M3)
-	if ((new_policy.max == 1920000) || (new_policy.max == 2000000))
-		return -EINVAL;
-#endif
-
-	ret = __cpufreq_set_policy(policy, &new_policy);
-	policy->user_policy.max = policy->max;
-
-	/* Yank555.lu : set cpufreq_max_limit accordingly if dvfs limit is defined */
-#ifdef CONFIG_DVFS_LIMIT
-	/* 
-	 * Keep scaling_max linked to cpufreq_max_limit only if it was previously linked,
-	 * link will be re-established when cpufreq_max_limit is released again, this will
-	 * enable Powersave mode to continue working as designed !
-	 */
-	if ((cpufreq_max_limit_coupled == SCALING_MAX_COUPLED)   ||
-	    (cpufreq_max_limit_coupled == SCALING_MAX_UNDEFINED)    ) {
-		if (get_cpufreq_level(policy->max, &cpufreq_level) == VALID_LEVEL) {
-			if (cpufreq_max_limit_val != -1)
-				/* Unlock the previous lock */
-				exynos_cpufreq_upper_limit_free(DVFS_LOCK_ID_USER);
-			lock_ret = exynos_cpufreq_upper_limit(DVFS_LOCK_ID_USER, cpufreq_level);
-			cpufreq_max_limit_val = policy->max;
-			cpufreq_max_limit_coupled = SCALING_MAX_COUPLED;
-		}
-	}
-#endif
-
-	return ret ? ret : count;
-}
+store_one(scaling_max_freq, max);
 
 /**
  * show_cpuinfo_cur_freq - current CPU frequency as detected by hardware
@@ -1706,8 +1656,7 @@ static int __cpufreq_set_policy(struct cpufreq_policy *data,
 	memcpy(&policy->cpuinfo, &data->cpuinfo,
 				sizeof(struct cpufreq_cpuinfo));
 
-	if (policy->min > data->user_policy.max
-		|| policy->max < data->user_policy.min) {
+	if (policy->min > data->max || policy->max < data->min) {
 		ret = -EINVAL;
 		goto error_out;
 	}
